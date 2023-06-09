@@ -88,9 +88,36 @@ class DebugRenderer : public EventListener {
             CONTACT_NORMAL				= 1 << 4,
         };
 
+        enum class DebugCollisionShapeType {
+
+            /// Display the Sphere collision shape
+            SPHERE                      = 1 << 0,
+
+            /// Display the Box collision shape
+            BOX                         = 1 << 1,
+
+            /// Display the Capsule collision shape
+            CAPSULE                     = 1 << 2,
+
+            /// Display the Convex mesh collision shape
+            CONE                        = 1 << 3,
+
+            /// Display the Convex mesh collision shape
+            CYLINDER                    = 1 << 4,
+
+            /// Display the Convex mesh collision shape
+            CONVEX_MESH                 = 1 << 5,
+
+            /// Display the Concave mesh collision shape
+            TRIANGLE_MESH               = 1 << 6,
+
+            /// Display the Height field collision shape
+            HEIGHTFIELD                 = 1 << 7
+        };
+
 		/// Struture that represents a line of the DebugRenderer
 		struct DebugLine {
-			
+
 			/// Constructor
             DebugLine(const Vector3& point1, const Vector3& point2, uint32 color)
                 :point1(point1), color1(color), point2(point2), color2(color) {
@@ -112,7 +139,7 @@ class DebugRenderer : public EventListener {
 
 		/// Struture that represents a triangle of the DebugRenderer
 		struct DebugTriangle {
-			
+
 			/// Constructor
 			DebugTriangle(const Vector3& point1, const Vector3& point2, const Vector3& point3, uint32 color)
                 :point1(point1), color1(color), point2(point2), color2(color), point3(point3), color3(color) {
@@ -167,6 +194,9 @@ class DebugRenderer : public EventListener {
 
         /// 32-bits integer that contains all the flags of debug items to display
 		uint32 mDisplayedDebugItems;
+
+        // 32-bits integer that contains all the flags of collision shapes to display
+        uint32 mDisplayedCollisionShapes;
 
 		/// Map a debug item with the color used to display it
 		Map<DebugItem, uint32> mMapDebugItemWithColor;
@@ -236,6 +266,12 @@ class DebugRenderer : public EventListener {
 
 		/// Set whether a debug info is displayed or not
 		void setIsDebugItemDisplayed(DebugItem item, bool isDisplayed);
+
+        /// Return whether a debug collision shape is displayed or not
+        bool getIsCollisionShapeDisplayed(DebugCollisionShapeType shapeType) const;
+
+        /// Set whether a debug collision shape is displayed or not
+        void setIsCollisionShapeDisplayed(DebugCollisionShapeType shapeType, bool isDisplayed);
 
         /// Get the contact point sphere radius
         decimal getContactPointSphereRadius() const;
@@ -328,6 +364,29 @@ RP3D_FORCE_INLINE void DebugRenderer::setIsDebugItemDisplayed(DebugItem item, bo
 	if (isDisplayed) {
 		mDisplayedDebugItems |= itemFlag;
 	}
+}
+
+// Return whether a debug collision shape is displayed or not
+/**
+ * @param shapeType The type of collision shape
+ * @return True if the given debug collision shape is being displayed and false otherwise
+ */
+RP3D_FORCE_INLINE bool DebugRenderer::getIsCollisionShapeDisplayed(DebugCollisionShapeType shapeType) const {
+    return mDisplayedCollisionShapes & static_cast<uint32>(shapeType);
+}
+
+// Set whether a debug collision shape is displayed or not
+/**
+ * @param shapeType The type of collision shape
+ * @param isDisplayed True if the given debug collision shape has to be displayed and false otherwise
+ */
+RP3D_FORCE_INLINE void DebugRenderer::setIsCollisionShapeDisplayed(DebugCollisionShapeType shapeType, bool isDisplayed) {
+    const uint32 shapeTypeFlag = static_cast<uint32>(shapeType);
+    uint32 resetBit = ~(shapeTypeFlag);
+    mDisplayedCollisionShapes &= resetBit;
+    if (isDisplayed) {
+        mDisplayedCollisionShapes |= shapeTypeFlag;
+    }
 }
 
 // Get the contact point sphere radius

@@ -65,7 +65,7 @@ void DebugRenderer::reset() {
 
 // Draw an AABB
 void DebugRenderer::drawAABB(const AABB& aabb, uint32 color) {
-	
+
 	const Vector3& min = aabb.getMin();
 	const Vector3& max = aabb.getMax();
 
@@ -122,11 +122,11 @@ void DebugRenderer::drawBox(const Transform& transform, const Vector3& halfExten
 void DebugRenderer::drawSphere(const Vector3& position, decimal radius, uint32 color) {
 
     Vector3 vertices[(NB_SECTORS_SPHERE + 1) * (NB_STACKS_SPHERE + 1) + (NB_SECTORS_SPHERE + 1)];
-	
+
 	// Vertices
     const decimal sectorStep = 2 * PI_RP3D / NB_SECTORS_SPHERE;
     const decimal stackStep = PI_RP3D / NB_STACKS_SPHERE;
-	
+
     for (uint32 i = 0; i <= NB_STACKS_SPHERE; i++) {
 
         const decimal stackAngle = PI_RP3D / 2 - i * stackStep;
@@ -134,7 +134,7 @@ void DebugRenderer::drawSphere(const Vector3& position, decimal radius, uint32 c
 		const decimal z = radius * std::sin(stackAngle);
 
         for (uint32 j = 0; j <= NB_SECTORS_SPHERE; j++) {
-		
+
 			const decimal sectorAngle = j * sectorStep;
 			const decimal x = radiusCosStackAngle * std::cos(sectorAngle);
 			const decimal y = radiusCosStackAngle * std::sin(sectorAngle);
@@ -150,16 +150,16 @@ void DebugRenderer::drawSphere(const Vector3& position, decimal radius, uint32 c
         uint32 a2 = a1 + NB_SECTORS_SPHERE + 1;
 
         for (uint32 j = 0; j < NB_SECTORS_SPHERE; j++, a1++, a2++) {
-		
+
 			// 2 triangles per sector except for the first and last stacks
 
 			if (i != 0) {
-			
+
 				mTriangles.add(DebugTriangle(vertices[a1], vertices[a2], vertices[a1 + 1], color));
 			}
 
 			if (i != (NB_STACKS_SPHERE - 1)) {
-				
+
 				mTriangles.add(DebugTriangle(vertices[a1 + 1], vertices[a2], vertices[a2 + 1], color));
 			}
 		}
@@ -176,13 +176,13 @@ void DebugRenderer::drawCapsule(const Transform& transform, decimal radius, deci
 	// Use an even number of stacks
     const uint32 nbStacks = NB_STACKS_SPHERE % 2 == 0 ? NB_STACKS_SPHERE : NB_STACKS_SPHERE - 1;
     const uint32 nbHalfStacks = nbStacks / 2;
-	
+
 	// Vertices
     const decimal sectorStep = 2 * PI_RP3D / NB_SECTORS_SPHERE;
     const decimal stackStep = PI_RP3D / nbStacks;
-	
+
     uint32 vertexIndex = 0;
-	
+
 	// Top cap sphere vertices
     for (uint32 i = 0; i <= nbHalfStacks; i++) {
 
@@ -191,7 +191,7 @@ void DebugRenderer::drawCapsule(const Transform& transform, decimal radius, deci
         const decimal y = radius * std::sin(stackAngle);
 
         for (uint32 j = 0; j <= NB_SECTORS_SPHERE; j++) {
-		
+
 			const decimal sectorAngle = j * sectorStep;
             const decimal x = radiusCosStackAngle * std::sin(sectorAngle);
             const decimal z = radiusCosStackAngle * std::cos(sectorAngle);
@@ -211,7 +211,7 @@ void DebugRenderer::drawCapsule(const Transform& transform, decimal radius, deci
         const decimal y = radius * std::sin(stackAngle);
 
         for (uint32 j = 0; j <= NB_SECTORS_SPHERE; j++) {
-		
+
 			const decimal sectorAngle = j * sectorStep;
             const decimal x = radiusCosStackAngle * std::sin(sectorAngle);
             const decimal z = radiusCosStackAngle * std::cos(sectorAngle);
@@ -230,7 +230,7 @@ void DebugRenderer::drawCapsule(const Transform& transform, decimal radius, deci
         uint32 a2 = a1 + NB_SECTORS_SPHERE + 1;
 
         for (uint32 j = 0; j < NB_SECTORS_SPHERE; j++, a1++, a2++) {
-		
+
 			// 2 triangles per sector except for the first stack
 
             if (i != 0) {
@@ -249,7 +249,7 @@ void DebugRenderer::drawCapsule(const Transform& transform, decimal radius, deci
         uint32 a2 = a1 + NB_SECTORS_SPHERE + 1;
 
         for (uint32 j = 0; j < NB_SECTORS_SPHERE; j++, a1++, a2++) {
-		
+
 			// 2 triangles per sector except for the last stack
 
             mTriangles.add(DebugTriangle(vertices[a1], vertices[a2], vertices[a1 + 1], color));
@@ -309,7 +309,7 @@ void DebugRenderer::drawConcaveMeshShape(const Transform& transform, const Conca
 
 		// For each triangle of the sub-part
         for (uint32 t = 0; t < concaveMeshShape->getNbTriangles(p); t++) {
-			
+
 			Vector3 triangleVertices[3];
 			concaveMeshShape->getTriangleVertices(p, t, triangleVertices);
 
@@ -348,43 +348,61 @@ void DebugRenderer::drawHeightFieldShape(const Transform& transform, const Heigh
 
 // Draw the collision shape of a collider
 void DebugRenderer::drawCollisionShapeOfCollider(const Collider* collider, uint32 color) {
-	
+
     switch (collider->getCollisionShape()->getName()) {
-		
+
         case CollisionShapeName::BOX:
         {
-            const BoxShape* boxShape = static_cast<const BoxShape*>(collider->getCollisionShape());
-            drawBox(collider->getLocalToWorldTransform(), boxShape->getHalfExtents(), color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::BOX))
+            {
+                const BoxShape* boxShape = static_cast<const BoxShape*>(collider->getCollisionShape());
+                drawBox(collider->getLocalToWorldTransform(), boxShape->getHalfExtents(), color);
+            }
             break;
         }
         case CollisionShapeName::SPHERE:
         {
-            const SphereShape* sphereShape = static_cast<const SphereShape*>(collider->getCollisionShape());
-            drawSphere(collider->getLocalToWorldTransform().getPosition(), sphereShape->getRadius(), color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::SPHERE))
+            {
+                const SphereShape* sphereShape = static_cast<const SphereShape*>(collider->getCollisionShape());
+                drawSphere(collider->getLocalToWorldTransform().getPosition(), sphereShape->getRadius(), color);
+            }
             break;
         }
         case CollisionShapeName::CAPSULE:
         {
-            const CapsuleShape* capsuleShape = static_cast<const CapsuleShape*>(collider->getCollisionShape());
-            drawCapsule(collider->getLocalToWorldTransform(), capsuleShape->getRadius(), capsuleShape->getHeight(), color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::CAPSULE))
+            {
+                const CapsuleShape* capsuleShape = static_cast<const CapsuleShape*>(collider->getCollisionShape());
+                drawCapsule(collider->getLocalToWorldTransform(), capsuleShape->getRadius(), capsuleShape->getHeight(), color);
+            }
             break;
         }
         case CollisionShapeName::CONVEX_MESH:
         {
-            const ConvexMeshShape*  convexMeshShape = static_cast<const ConvexMeshShape*>(collider->getCollisionShape());
-            drawConvexMesh(collider->getLocalToWorldTransform(), convexMeshShape, color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::CONVEX_MESH))
+            {
+                const ConvexMeshShape*  convexMeshShape = static_cast<const ConvexMeshShape*>(collider->getCollisionShape());
+                drawConvexMesh(collider->getLocalToWorldTransform(), convexMeshShape, color);
+            }
             break;
         }
         case CollisionShapeName::TRIANGLE_MESH:
         {
-            const ConcaveMeshShape* concaveMeshShape = static_cast<const ConcaveMeshShape*>(collider->getCollisionShape());
-            drawConcaveMeshShape(collider->getLocalToWorldTransform(), concaveMeshShape, color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::CONVEX_MESH))
+            {
+                const ConcaveMeshShape* concaveMeshShape = static_cast<const ConcaveMeshShape*>(collider->getCollisionShape());
+                drawConcaveMeshShape(collider->getLocalToWorldTransform(), concaveMeshShape, color);
+            }
             break;
         }
         case CollisionShapeName::HEIGHTFIELD:
         {
-            const HeightFieldShape* heighFieldShape = static_cast<const HeightFieldShape*>(collider->getCollisionShape());
-            drawHeightFieldShape(collider->getLocalToWorldTransform(), heighFieldShape, color);
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::HEIGHTFIELD))
+            {
+                const HeightFieldShape* heighFieldShape = static_cast<const HeightFieldShape*>(collider->getCollisionShape());
+                drawHeightFieldShape(collider->getLocalToWorldTransform(), heighFieldShape, color);
+            }
             break;
         }
         default:
@@ -400,7 +418,7 @@ void DebugRenderer::computeDebugRenderingPrimitives(const PhysicsWorld& world) {
 	const bool drawColliderAABB = getIsDebugItemDisplayed(DebugItem::COLLIDER_AABB);
 	const bool drawColliderBroadphaseAABB = getIsDebugItemDisplayed(DebugItem::COLLIDER_BROADPHASE_AABB);
 	const bool drawCollisionShape = getIsDebugItemDisplayed(DebugItem::COLLISION_SHAPE);
-	
+
     const uint32 nbCollisionBodies = world.getNbCollisionBodies();
     const uint32 nbRigidBodies = world.getNbRigidBodies();
 
