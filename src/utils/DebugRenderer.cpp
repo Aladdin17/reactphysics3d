@@ -41,8 +41,9 @@ using namespace reactphysics3d;
 
 // Constructor
 DebugRenderer::DebugRenderer(MemoryAllocator& allocator)
-              :mAllocator(allocator), mLines(allocator), mTriangles(allocator), mDisplayedDebugItems(0), mMapDebugItemWithColor(allocator),
-               mContactPointSphereRadius(DEFAULT_CONTACT_POINT_SPHERE_RADIUS), mContactNormalLength(DEFAULT_CONTACT_NORMAL_LENGTH) {
+              :mAllocator(allocator), mLines(allocator), mTriangles(allocator), mDisplayedDebugItems(0), mDisplayedCollisionShapes(0),
+               mMapDebugItemWithColor(allocator), mContactPointSphereRadius(DEFAULT_CONTACT_POINT_SPHERE_RADIUS),
+               mContactNormalLength(DEFAULT_CONTACT_NORMAL_LENGTH) {
 
     mMapDebugItemWithColor.add(Pair<DebugItem, uint32>(DebugItem::COLLIDER_AABB, static_cast<uint32>(DebugColor::MAGENTA)));
     mMapDebugItemWithColor.add(Pair<DebugItem, uint32>(DebugItem::COLLIDER_BROADPHASE_AABB, static_cast<uint32>(DebugColor::YELLOW)));
