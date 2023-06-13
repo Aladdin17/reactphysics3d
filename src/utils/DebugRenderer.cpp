@@ -390,7 +390,7 @@ void DebugRenderer::drawCollisionShapeOfCollider(const Collider* collider, uint3
         }
         case CollisionShapeName::TRIANGLE_MESH:
         {
-            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::CONVEX_MESH))
+            if (getIsCollisionShapeDisplayed(DebugCollisionShapeType::TRIANGLE_MESH))
             {
                 const ConcaveMeshShape* concaveMeshShape = static_cast<const ConcaveMeshShape*>(collider->getCollisionShape());
                 drawConcaveMeshShape(collider->getLocalToWorldTransform(), concaveMeshShape, color);

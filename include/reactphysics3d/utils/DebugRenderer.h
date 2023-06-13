@@ -90,29 +90,23 @@ class DebugRenderer : public EventListener {
 
         enum class DebugCollisionShapeType {
 
-            /// Display the Sphere collision shape
-            SPHERE                      = 1 << 0,
+            /// Display Box shape
+            BOX                         = 1 << 0,
 
-            /// Display the Box collision shape
-            BOX                         = 1 << 1,
+            /// Display Sphere shape
+            SPHERE                      = 1 << 1,
 
-            /// Display the Capsule collision shape
+            /// Display Capsule shape
             CAPSULE                     = 1 << 2,
 
-            /// Display the Convex mesh collision shape
-            CONE                        = 1 << 3,
+            /// Display Convex Mesh shape
+            CONVEX_MESH                 = 1 << 3,
 
-            /// Display the Convex mesh collision shape
-            CYLINDER                    = 1 << 4,
+            /// Display Triangle Mesh shape
+            TRIANGLE_MESH               = 1 << 4,
 
-            /// Display the Convex mesh collision shape
-            CONVEX_MESH                 = 1 << 5,
-
-            /// Display the Concave mesh collision shape
-            TRIANGLE_MESH               = 1 << 6,
-
-            /// Display the Height field collision shape
-            HEIGHTFIELD                 = 1 << 7
+            /// Display HeightField shape
+            HEIGHTFIELD                 = 1 << 5
         };
 
 		/// Struture that represents a line of the DebugRenderer
