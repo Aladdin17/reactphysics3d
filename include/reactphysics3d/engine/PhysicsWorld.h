@@ -357,6 +357,8 @@ class PhysicsWorld {
         /// Update the physics simulation
         void update(decimal timeStep);
 
+        void forceGenerateRenderingPrimitives();
+
         /// Get the number of iterations for the velocity constraint solver
         uint16 getNbIterationsVelocitySolver() const;
 

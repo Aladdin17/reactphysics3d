@@ -72,7 +72,7 @@ PhysicsWorld::PhysicsWorld(MemoryManager& memoryManager, PhysicsCommon& physicsC
                                         mSliderJointsComponents),
                 mDynamicsSystem(*this, mCollisionBodyComponents, mRigidBodyComponents, mTransformComponents, mCollidersComponents, mIsGravityEnabled, mConfig.gravity),
                 mNbVelocitySolverIterations(mConfig.defaultVelocitySolverNbIterations),
-                mNbPositionSolverIterations(mConfig.defaultPositionSolverNbIterations), 
+                mNbPositionSolverIterations(mConfig.defaultPositionSolverNbIterations),
                 mIsSleepingEnabled(mConfig.isSleepingEnabled), mRigidBodies(mMemoryManager.getPoolAllocator()),
                 mIsGravityEnabled(true), mSleepLinearVelocity(mConfig.defaultSleepLinearVelocity),
                 mSleepAngularVelocity(mConfig.defaultSleepAngularVelocity), mTimeBeforeSleep(mConfig.defaultTimeBeforeSleep) {
@@ -374,6 +374,13 @@ void PhysicsWorld::update(decimal timeStep) {
 
     // Reset the single frame memory allocator
     mMemoryManager.resetFrameAllocator();
+}
+
+void PhysicsWorld::forceGenerateRenderingPrimitives()
+{
+    // reset the debug renderer and generate the primitives
+    mDebugRenderer.reset();
+    mDebugRenderer.computeDebugRenderingPrimitives(*this);
 }
 
 // Update the world inverse inertia tensors of rigid bodies
@@ -1156,4 +1163,3 @@ RigidBody* PhysicsWorld::getRigidBody(uint32 index) {
 
     return mRigidBodies[index];
 }
-
